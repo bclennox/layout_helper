@@ -113,7 +113,7 @@ class LayoutHelper {
    * @param string
    * @return string
    */
-  public function section($section){
+  public function render($section){
     $layout = new Layout($section);
     return $layout->interpret($this);
   }

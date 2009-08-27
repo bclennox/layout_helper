@@ -21,11 +21,11 @@ $layout->ie->begin('IE');
   $layout->css('ie');
 $layout->ie->end();
 
-echo $layout->section('header');
+echo $layout->render('header');
 
 ?>
 
 <h1>Test page</h1>
 <p>What it do?</p>
 
-<?php echo $layout->section('footer'); ?>
+<?php echo $layout->render('footer'); ?>
