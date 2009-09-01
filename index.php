@@ -2,30 +2,33 @@
 
 require 'lib/LayoutHelper.php';
 
-$layout = new LayoutHelper();
-$layout->title('Layout Helper Test Page');
-$layout->body_class('test-page');
+$helper = new LayoutHelper();
+$helper->title('Layout Helper Test Page');
+$helper->body_class('test-page');
 
-$layout->js('application');
-$layout->css('default');
-$layout->css('print:print');
-$layout->css('small:handheld');
+$helper->js('application');
+$helper->css('default');
+$helper->css('print[screen,print]');
+$helper->css('small[handheld]');
 
-$layout->ie->begin('gt IE 6');
-  $layout->js('fancy');
-  $layout->css('pretty');
-$layout->ie->end();
+$helper->css('http://localhost/cdn/stylesheets/print.css[print]');
+$helper->js('http://maps.google.com/maps/api/js?sensor=false');
 
-$layout->ie->begin('IE');
-  $layout->js('ie');
-  $layout->css('ie');
-$layout->ie->end();
+$helper->ie->begin('gt IE 6');
+  $helper->js('fancy');
+  $helper->css('pretty');
+$helper->ie->end();
 
-echo $layout->render('header');
+$helper->ie->begin('IE');
+  $helper->js('ie');
+  $helper->css('ie');
+$helper->ie->end();
+
+echo $helper->render('header');
 
 ?>
 
 <h1>Test page</h1>
 <p>What it do?</p>
 
-<?php echo $layout->render('footer'); ?>
+<?php echo $helper->render('footer'); ?>

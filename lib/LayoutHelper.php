@@ -51,15 +51,14 @@ class LayoutHelper {
   
   /**
    * Adds a stylesheet <link> tag. Each argument should be a string
-   * denoting the filename of the stylesheet, optionally including a
-   * colon and the media it applies to. For example:
+   * denoting the filename of the stylesheet, optionally including
+   * the media it applies to in square brackets. For example:
    *
-   *   'screen.css:screen,projection'
-   *   'print.css:print'
+   *   'screen.css[screen,projection]'
+   *   'print.css[print]'
    *   'default'
    *
-   * Note that the .css extension is optional, and the default media
-   * type is "screen,projection".
+   * See the notes on stylesheet_tag() about treatment of filenames.
    *
    * Returns the concatenation of all <link> tags.
    *
@@ -70,9 +69,13 @@ class LayoutHelper {
     if (func_num_args() > 0){
       for ($i = 0; $i < func_num_args(); $i++){
         $arg = func_get_arg($i);    // Fatal error: func_get_arg(): Can't be used as a function parameter
-        $chunks = explode(':', $arg);
-        $filename = $chunks[0];
-        $media = count($chunks) > 1 ? $chunks[1] : 'screen,projection';
+        if (preg_match('/^(.+)\[(.+)\]$/', $arg, $matches)){
+          $filename = $matches[1];
+          $media = $matches[2];
+        } else {
+          $filename = $arg;
+          $media = 'screen,projection';
+        }
         
         array_push($this->css, $this->stylesheet_tag($filename, $media));
       }
@@ -82,10 +85,20 @@ class LayoutHelper {
   }
   
   /**
+   * Returns the path to the top-level stylesheets directory. This is
+   * not configurable yet, other than editing the source.
+   * 
+   * @return string
+   */
+  public function css_path(){
+    return $this->css_path;
+  }
+  
+  /**
    * Adds a <script> tag. Each argument should be a string denoting
    * the filename of the JavaScript file.
    *
-   * Note that the .js extension is optional.
+   * See the notes on javascript_tag() about treatment of filenames.
    *
    * Returns the concatenation of all <script> tags.
    *
@@ -101,6 +114,16 @@ class LayoutHelper {
     }
     
     return join($this->js, "\n");
+  }
+  
+  /**
+   * Returns the path to the top-level javascripts directory. This is
+   * not configurable yet, other than editing the source.
+   * 
+   * @return string
+   */
+  public function js_path(){
+    return $this->js_path;
   }
   
   /**
@@ -124,30 +147,41 @@ class LayoutHelper {
   
   /**
    * Returns a <link> tag for the given stylesheet with the given
-   * media type, wrapped in a conditional comment if needed. The
-   * .css extension is optional.
+   * media type, wrapped in a conditional comment if needed.
+   *
+   * If the filename appears to be a URL, it will be used as the href
+   * attribute exactly as it is given. Otherwise, $this->css_path() will be
+   * prepended, and the .css extension is optional.
    *
    * @param string
    * @param string
    * @return string
    */
   private function stylesheet_tag($filename, $media){
-    $tag = '<link rel="stylesheet" type="text/css" href="' . $this->css_path . '/' . $this->extensionize($filename, 'css') . '" media="' . $media . '">';
+    $href = (substr($filename, 0, 7) == 'http://') ?
+      $filename :
+      $this->css_path() . '/' . $this->extensionize($filename, 'css');
     
-    return $this->wrap($tag);
+    return $this->wrap("<link rel=\"stylesheet\" type=\"text/css\" href=\"$href\" media=\"$media\" />");
   }
   
   /**
    * Returns a <script> tag for the given JavaScript, wrapped in
-   * a conditional comment if needed. The .js extension is optional.
+   * a conditional comment if needed.
+   *
+   * If the filename appears to be a URL, it will be used as the src
+   * attribute exactly as it is given. Otherwise, $this->js_path() will be
+   * prepended, and the .js extension is optional.
    *
    * @param string
    * @return string
    */
   private function javascript_tag($filename){
-    $tag = '<script src="' . $this->js_path . '/' . $this->extensionize($filename, 'js') . '"></script>';
+    $src = (substr($filename, 0, 7) == 'http://') ?
+      $filename :
+      $this->js_path() . '/' . $this->extensionize($filename, 'js');
     
-    return $this->wrap($tag);
+    return $this->wrap("<script src=\"$src\"></script>");
   }
   
   /**
