@@ -7,11 +7,10 @@ $helper->title('Layout Helper Test Page');
 $helper->body_class('test-page');
 
 $helper->js('application');
-$helper->css('default');
-$helper->css('print[screen,print]');
-$helper->css('small[handheld]');
+$helper->css('default', 'print[screen,print]', 'small[handheld]');
 
 $helper->css('http://localhost/cdn/stylesheets/print.css[print]');
+$helper->css('https://localhost/secure/stylesheets/secret.css');
 $helper->js('http://maps.google.com/maps/api/js?sensor=false');
 
 $helper->ie->begin('gt IE 6');

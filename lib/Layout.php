@@ -12,7 +12,7 @@ class Layout {
    * @param string
    */
   public function __construct($template){
-    $this->path = "$_SERVER[DOCUMENT_ROOT]/{$this->sections_path}/${template}.html.section";
+    $this->path = "$_SERVER[DOCUMENT_ROOT]/{$this->sections_path}/${template}.html.php";
   }
   
   /**
@@ -28,10 +28,14 @@ class Layout {
   public function interpret($helper){
     $this->helper = $helper;
     
-    $lines = file($this->path);
+    ob_start();
+    include $this->path;
+    $lines = ob_get_contents();
+    ob_end_clean();
+    
     $retval = '';
-    foreach ($lines as $line){
-      $retval .= $this->parse($line);
+    foreach (explode("\n", $lines) as $line){
+      $retval .= $this->parse($line) . "\n";
     }
     
     return $retval;
