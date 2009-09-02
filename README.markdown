@@ -1,7 +1,7 @@
 PHP layouts made simple
 =======================
 
-LayoutHelper is a really, really basic templating system. Really basic. Sort of based on Ryan Bates' [nifty_layout](http://github.com/ryanb/nifty-generators).
+LayoutHelper is a really, really basic templating system. Really basic. Sort of based on Ryan Bates's [nifty_layout](http://github.com/ryanb/nifty-generators).
 
 Setting template substitution values
 ------------------------------------
