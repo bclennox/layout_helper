@@ -18,6 +18,22 @@ class LayoutHelper {
    */
   public $ie;
   
+  /**
+   * Makes sure the filename has the given extension.
+   *
+   * @static
+   * @param string
+   * @param string
+   * @return string
+   */
+  public static function extensionize($filename, $extension){
+    if (!preg_match("/\.${extension}$/", $filename)){
+      $filename = "${filename}.${extension}";
+    }
+    
+    return $filename;
+  }
+  
   public function __construct(){
     $this->ie = new IE();
   }
@@ -161,7 +177,7 @@ class LayoutHelper {
   private function stylesheet_tag($filename, $media){
     $href = ($this->is_remote($filename)) ?
       $filename :
-      $this->css_path() . '/' . $this->extensionize($filename, 'css');
+      $this->css_path() . '/' . self::extensionize($filename, 'css');
     
     return $this->wrap("<link rel=\"stylesheet\" type=\"text/css\" href=\"$href\" media=\"$media\" />");
   }
@@ -180,24 +196,9 @@ class LayoutHelper {
   private function javascript_tag($filename){
     $src = ($this->is_remote($filename)) ?
       $filename :
-      $this->js_path() . '/' . $this->extensionize($filename, 'js');
+      $this->js_path() . '/' . self::extensionize($filename, 'js');
     
     return $this->wrap("<script src=\"$src\"></script>");
-  }
-  
-  /**
-   * Makes sure the filename has the given extension.
-   *
-   * @param string
-   * @param string
-   * @return string
-   */
-  private function extensionize($filename, $extension){
-    if (!preg_match("/\.${extension}$/", $filename)){
-      $filename = "${filename}.${extension}";
-    }
-    
-    return $filename;
   }
   
   /**

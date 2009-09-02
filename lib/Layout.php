@@ -1,18 +1,20 @@
 <?php
 
+require_once 'LayoutHelper.php';
+
 class Layout {
   private $path;
   private $helper;
-  private $sections_path = '/sections';
+  private $templates_path = '/templates';
   
   /**
-   * Constructs this object to use the given template, which should
-   * not contain the .html.section extension.
+   * Constructs this object to use the given template. The .html.php
+   * extension is optional.
    *
    * @param string
    */
   public function __construct($template){
-    $this->path = "$_SERVER[DOCUMENT_ROOT]/{$this->sections_path}/${template}.html.php";
+    $this->path = "$_SERVER[DOCUMENT_ROOT]/{$this->templates_path}/" . LayoutHelper::extensionize($template, 'html.php');
   }
   
   /**

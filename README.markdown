@@ -26,15 +26,18 @@ When you're done:
 Creating template files
 -----------------------
 
-Templates are named `whatever.html.section` and should live in a `/sections` subdirectory beneath your project root. Method substitutions within a template are denoted by `{{method}}`, where the method will be called on the given LayoutHelper object and the return value substituted for the string within the curly brackets. So if you have this in a template:
+Templates are named `whatever.html.php` and should live in a `/templates` subdirectory beneath your project root. Method substitutions within a template are denoted by `{{method}}`, where the method will be called on the given LayoutHelper object and the return value substituted for the string within the curly brackets. So if you have this in a template:
 
+    // header.html.php
     <body class="{{body_class}}">
 
-then `$helper->render("&lt;your_template&gt;")` will call the `body_class` method of the `$helper` object and substitute its return value (say it's "home"), resulting in this:
+then `$helper->render("header")` will call the `body_class` method of the `$helper` object and substitute its return value (say it's "home"), resulting in this:
 
     <body class="home">
 
-Everything else is just plain old HTML (or whatever).
+The template itself is also `require`d, so any PHP-executable code within the template will also be evaluated:
+
+    <meta name="description" content="<?php perch_content('Site Description'); " />
 
 Conditional comments
 --------------------
