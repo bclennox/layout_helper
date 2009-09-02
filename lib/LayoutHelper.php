@@ -9,6 +9,7 @@ class LayoutHelper {
   private $title = 'Untitled';
   private $js = array();
   private $css = array();
+  
   private $css_path = '/stylesheets';
   private $js_path = '/javascripts';
   
@@ -158,7 +159,7 @@ class LayoutHelper {
    * @return string
    */
   private function stylesheet_tag($filename, $media){
-    $href = (substr($filename, 0, 7) == 'http://') ?
+    $href = ($this->is_remote($filename)) ?
       $filename :
       $this->css_path() . '/' . $this->extensionize($filename, 'css');
     
@@ -177,7 +178,7 @@ class LayoutHelper {
    * @return string
    */
   private function javascript_tag($filename){
-    $src = (substr($filename, 0, 7) == 'http://') ?
+    $src = ($this->is_remote($filename)) ?
       $filename :
       $this->js_path() . '/' . $this->extensionize($filename, 'js');
     
@@ -209,6 +210,10 @@ class LayoutHelper {
    */
   private function wrap($html){
     return ($this->ie->is_active()) ? $this->ie->wrap($html) : $html;
+  }
+  
+  private function is_remote($filename){
+    return preg_match('/^https?:\/\//', $filename);
   }
 }
 
