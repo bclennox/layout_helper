@@ -3,6 +3,8 @@
 require_once 'Layout.php';
 require_once 'IE.php';
 
+@include 'layout_helper_utilities.php';
+
 class LayoutHelper {
   
   private $body_class = '';
@@ -144,18 +146,38 @@ class LayoutHelper {
   }
   
   /**
-   * Creates a new Layout for the given section and interprets
+   * Creates a new Layout for the given template and interprets
    * this helper within that layout. The argument passed should be
-   * the name of the section without the .html.section extension.
+   * the name of the template with an optional .html.php extension.
    *
    * Returns a huge chunk of HTML, probably.
    *
    * @param string
    * @return string
    */
-  public function render($section){
-    $layout = new Layout($section);
+  public function render($template){
+    $layout = new Layout($template);
     return $layout->interpret($this);
+  }
+  
+  /**
+   * Renders a template in the current directory named like a Rails
+   * partial template. For example, if $partial were the string
+   * "subnav", this method would attempt to render a template named
+   * "_subnav.html.php".
+   *
+   * Currently, the partial must be in the current directory.
+   *
+   * Returns the same thing as render().
+   *
+   * @param string
+   * @return string
+   */
+  public function render_partial($partial){
+    $basename = preg_replace('/^_/', '', basename($partial));
+    $path = '_' . LayoutHelper::extensionize($basename, 'html.php');
+    
+    return $this->render($path);
   }
   
   
@@ -215,6 +237,70 @@ class LayoutHelper {
   
   private function is_remote($filename){
     return preg_match('/^https?:\/\//', $filename);
+  }
+}
+
+if (!function_exists('h')){
+
+  /**
+   * This function is equivalent to htmlspecialchars().
+   *
+   * @param string
+   * @param int
+   * @param string
+   * @return string
+   */
+  function h($string, $quote_style = ENT_COMPAT, $charset = 'ISO-8859-1'){
+    return htmlentities($string, $quote_style, $charset);
+  }
+}
+
+if (!function_exists('d')){
+  
+  /**
+   * Debugger.
+   *
+   * @param mixed
+   * @param string
+   * @param boolean
+   */
+  function d($var, $msg = '[no message]', $escape = true){
+    if (is_null($var)){
+      $var = '::NULL::';
+    } else if (is_bool($var)){
+      $var = $var ? '::TRUE::' : '::FALSE::';
+    }
+
+    $var = print_r($var, true);
+
+    if ($escape){
+      $var = htmlspecialchars($var);
+    }
+
+    // find our caller
+    $bt = debug_backtrace();
+    if (count($bt) > 1){
+      $c = $bt[1];
+      if (array_key_exists('class', $c)){
+        $caller = "$c[class]$c[type]$c[function]()";
+      } else {
+        $caller = "$c[function]()";
+      }
+    } else {
+      $caller = '';
+    }
+    
+    if (strlen($msg) > 0 && strlen($caller) > 0){
+      $msg = "$msg [$caller]";
+    } else if (strlen($caller) > 0){
+      $msg = $caller;
+    }
+
+    if (strlen($msg) > 0){
+      $msg = "$msg:\n";
+    }
+
+    echo "<pre class=\"debug\">$msg$var</pre>";
   }
 }
 

@@ -1,7 +1,7 @@
 PHP layouts made simple
 =======================
 
-LayoutHelper is a really, really basic templating system. Really basic. Sort of based on Ryan Bates's [nifty_layout](http://github.com/ryanb/nifty-generators).
+LayoutHelper is a really, really basic templating system. Really basic. Sort of based on Ryan Bates's [nifty_layout](http://github.com/ryanb/nifty-generators) and Rails's ActionView.
 
 Setting template substitution values
 ------------------------------------
@@ -17,18 +17,13 @@ Create a new LayoutHelper object. Then call methods to set appropriate values:
 CSS and JS methods are reasonably smart. Extensions are optional, remote URLs are acceptable, and CSS media type defaults to "screen,projection" if not specified in square brackets:
 
     $helper->css('http://assets.example.com/css/print.css[print]');
-    $helper->css('lib/blueprint/screen.css');
+    $helper->css('lib/blueprint/screen');
     $helper->js('http://www.google.com/jsapi');
 
 Methods take multiple arguments if they make sense:
 
-    $helper->css('screen[screen,projection]', 'print[print]', 'dancing_bunny[handheld]');
+    $helper->css('screen[screen,projection]', 'print[print]', 'DancingBunny[handheld]');
     $helper->js('lib/jquery-1.3.2.min', 'application');
-
-When you're done:
-    
-    // more about templates in the next section
-    echo $helper->render('header');
 
 Creating template files
 -----------------------
@@ -44,7 +39,20 @@ then `$helper->render('header')` will call the `body_class` method of the `$help
 
 The template itself is also `require`d, so any PHP-executable code within the template will also be evaluated:
 
+    // templates/header.html.php
     <meta name="description" content="<?php perch_content('Site Description'); " />
+
+Rendering templates
+-------------------
+
+Once you've created a template and put it in the proper directory:
+    
+    echo $helper->render('header');
+
+You can also render "partials," which aren't really as sophisticated as Rails's partials, but reside in whatever the current directory is and start with an underscore:
+
+    // attempts to render a template named "_subnav.html.php" in the current directory
+    echo $helper->render_partial('subnav');
 
 Conditional comments
 --------------------
@@ -67,6 +75,21 @@ which will result in this output:
     <!--[if IE 6]><style href="/stylesheets/ie6.css" ...></style><![endif]-->
     <!--[if lt IE 8]><style href="/stylesheets/lib/blueprint/ie.css" ...></style><![endif]-->
     <!--[if IE 6]><script src="/javascripts/broken-browser.js"></script><![endif]-->
+
+Utilities
+---------
+
+Two utility functions will also be defined in the global namespace if no such functions already exist.
+
+The `h()` function is a proxy to the PHP built-in function `htmlspecialchars()` and takes the same arguments:
+
+    echo h($user_generated_content);  // same as "echo htmlspecialchars($user_generated_content);"
+
+The `d()` function is a wrapper for `print_r()` that includes a debug message, last stack frame, and string values for booleans and nulls instead of ints or empty strings. It also wraps the output in a `<pre class="debug">` tag:
+
+    d($some_variable);  // bunch of debug output
+
+LayoutHelper will also attempt to include a file named `layout_helper_utilities.php` if it exists in the include path, so that you can put your own helpers in there.
 
 To-do
 -----

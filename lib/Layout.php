@@ -14,7 +14,11 @@ class Layout {
    * @param string
    */
   public function __construct($template){
-    $this->path = "$_SERVER[DOCUMENT_ROOT]/{$this->templates_path}/" . LayoutHelper::extensionize($template, 'html.php');
+    if (file_exists($template)){
+      $this->path = $template;
+    } else {
+      $this->path = "$_SERVER[DOCUMENT_ROOT]/{$this->templates_path}/" . LayoutHelper::extensionize($template, 'html.php');
+    }
   }
   
   /**
@@ -23,6 +27,9 @@ class Layout {
    * encountered in the layout file (i.e., "{{method_name}}") are called
    * on the LayoutHelper, and the return values are substituted in the
    * layout.
+   *
+   * There will also be a $helper variable available to the template that
+   * references the given LayoutHelper object.
    *
    * @param object LayoutHelper
    * @return string

@@ -30,4 +30,6 @@ echo $helper->render('header');
 <h1>Test page</h1>
 <p>What it do?</p>
 
+<?php echo $helper->render_partial('partial'); ?>
+
 <?php echo $helper->render('footer'); ?>
